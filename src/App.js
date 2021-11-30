@@ -6,6 +6,7 @@ import abi from './utils/WavePortal.json'
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [allWaves, setAllWaves] = useState([]);
+  const [message, setMessage] = useState("")
 
   const contractAddress = " 0x0f7BEc5776B31fED1619E1fb2C31D41bD1f3e541";
 
@@ -97,7 +98,7 @@ const App = () => {
     try {
       const { ethereum } = window;
 
-      if (ethereum) {
+      if (ethereum && message) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
@@ -105,12 +106,13 @@ const App = () => {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave("", { gasLimit: 300000 });
+        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
 
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
+        setMessage("");
 
         count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
@@ -142,6 +144,8 @@ const App = () => {
           id="waveText"
           className="waveText"
           placeholder="Send me a link to something interesting about Solidity:)"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
 
         <button className="waveButton" onClick={wave}>

@@ -53,6 +53,7 @@ font-family: serif;
   color: #1D2B64; 
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
   width: 150px;
+  margin-bottom: 20px; 
 }
 
 .wavers {
