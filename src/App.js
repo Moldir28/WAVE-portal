@@ -8,9 +8,28 @@ const App = () => {
   const [allWaves, setAllWaves] = useState([]);
   const [message, setMessage] = useState("")
 
-  const contractAddress = " 0x0f7BEc5776B31fED1619E1fb2C31D41bD1f3e541";
+  const contractAddress = "0x0f7BEc5776B31fED1619E1fb2C31D41bD1f3e541";
 
   const contractABI = abi.abi;
+
+
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const getAllWaves = async () => {
     try {
@@ -76,23 +95,7 @@ const App = () => {
     }
   }
 
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
 
-      if (!ethereum) {
-        alert("Get MetaMask!");
-        return;
-      }
-
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const wave = async () => {
     try {
@@ -106,16 +109,16 @@ const App = () => {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
+        const waveTxn = await wavePortalContract.wave(message);
+        console.log(message)
 
         console.log("Mining...", waveTxn.hash);
 
-        await waveTxn.wait();
+        await waveTxn.wait()
         console.log("Mined -- ", waveTxn.hash);
-        setMessage("");
-
         count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
+        setMessage("");
       } else {
         console.log("Ethereum object doesn't exist!");
       }
